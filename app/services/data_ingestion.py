@@ -2,37 +2,50 @@ from app.data import get_data
 from dotenv import load_dotenv
 import os
 import requests
+import psycopg2
+from configparser import ConfigParser
 
-def validate_ticker(ticker: str):
-    load_dotenv()
-    api_key = os.getenv('ALPHAVANTAGE_API_KEY')
-    url = f'https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={ticker}&apikey={api_key}'
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        if 'bestMatches' in data and len(data['bestMatches']) > 0:
-            best_match = data['bestMatches'][0]['1. symbol']
-            if best_match is None:
-                raise ValueError(f'Ticker {ticker} is not valid')
-            elif best_match.lower() != ticker.lower():
-                raise ValueError(f'Ticker {ticker} is not valid. Did you mean {best_match}?')
-            else:
-                return best_match
-        else:
-            raise ValueError(f'Ticker {ticker} is not valid')
+def config(filename='/Users/averyclapp/Documents/Coding Stuff/AIStockPicker/app/core/database.ini', section='postgresql'):
+    parser = ConfigParser()
+    parser.read(filename)
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
     else:
-        raise ValueError(f'Error occurred while validating ticker: {response.status_code}')
+        raise Exception(f'Section {section} not found in the {filename} file')
+    return db
+
+def validate_ticker(ticker):
+    conn = None
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tickers WHERE ticker = %s", (ticker,))
+        result = cur.fetchone()
+        cur.close()
+        return result is not None
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        return False
+    finally:
+        if conn is not None:
+            conn.close()
+    return True
     
 
 def setup(ticker: str):
-    # Validate the ticker
-    try:
-        validate_ticker(ticker)
-    except ValueError as e:
-        return str(e)
+    # Ensure the ticker is valid
+    if not validate_ticker(ticker):
+        return f"Ticker {ticker} is not valid!"
     
-    # Begin the data ingestion process
+    # # Get HTML code for desired websites
+    get_data.fetch_data(ticker)
 
+    # # Go through html files and extract information
+    get_data.extract_data(ticker)
 
 
     return f"Retrieved data for {ticker} successfully!"
