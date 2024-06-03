@@ -5,5 +5,7 @@ router = APIRouter()
 
 @router.get("/{ticker}")
 async def setup_data(ticker: str):
-    response = data_ingestion.setup(ticker)
-    return response
+    extracted_data = data_ingestion.main(ticker)
+    processed_data = data_processing.main(extracted_data)
+    report = ai_report.main(processed_data)
+    return report

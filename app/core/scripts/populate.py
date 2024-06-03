@@ -21,9 +21,8 @@ def populate_tickers_table():
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
 
-        tickers = []
+        tickers = ['DOGE', 'USDT']
         for ticker in tickers:
-            stock_info = yf.Ticker(ticker).info
             cur.execute(
                 "INSERT INTO tickers (ticker) VALUES (%s)", [ticker])
             print(f"Added ticker: {ticker}")
@@ -58,5 +57,5 @@ def view_tickers():
             conn.close()
 
 if __name__ == '__main__':
-    # populate_tickers_table()
-    view_tickers()
+    populate_tickers_table()
+    # view_tickers()

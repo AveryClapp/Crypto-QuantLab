@@ -28,7 +28,6 @@ def validate_ticker(ticker):
         cur.close()
         return result is not None
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
         return False
     finally:
         if conn is not None:
@@ -36,16 +35,15 @@ def validate_ticker(ticker):
     return True
     
 
-def setup(ticker: str):
+def main(ticker: str):
     # Ensure the ticker is valid
     if not validate_ticker(ticker):
         return f"Ticker {ticker} is not valid!"
     
-    # # Get HTML code for desired websites
-    get_data.fetch_data(ticker)
+    # Get HTML code for desired websites
+    data = get_data.fetch_data(ticker)
 
-    # # Go through html files and extract information
-    get_data.extract_data(ticker)
+    # Go through html files and extract information
+    extracted_data = get_data.extract_data(data)
 
-
-    return f"Retrieved data for {ticker} successfully!"
+    return extracted_data
