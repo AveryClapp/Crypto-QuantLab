@@ -1,19 +1,31 @@
 import requests
 import os
-from bs4 import BeautifulSoup
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from bs4 import BeautifulSoup 
+from dotenv import load_dotenv
+from supabase import create_client, Client
+import pandas as pd
 
-'''
-finance.yahoo.com/quote/{ticker}
-google.com/search?q={ticker}+stock
-cnn.com/markets/stocks/{ticker}
-google.com/finance/quote/{ticker}:NASDAQ
-'''
 
-def fetch_data(ticker: str):
-    pass
+def main(crypto):
+    #Create supabase client connection
+    
+    if not supabase.table(f'{crypto}'):
+        print('table does not exist')
+    coinmarketcap_data(crypto)
 
-def extract_data(data: dict):
-    pass
 
-if __name__ == '__main__':
-    pass
+
+
+def coinmarketcap_data(crypto):
+    url = f"https://coinmarketcap.com/currencies/{crypto}"
+    body = requests.get(url).content
+    soup = BeautifulSoup(body, "html.parser")
+
+    #Gather finanical data for the crypto
+    cur_price = soup.find(class_="sc-d1ede7e3-0 fsQm base-text").get_text()
+    print(cur_price)
+
+
+if __name__ == "__main__":
+    main("bitcoin")
