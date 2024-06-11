@@ -19,7 +19,7 @@ def main(crypto):
         print('crypto file created')
     time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
     # market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change = coinmarketcap_data(crypto)
-    btc_inflow = exchange_data(crypto)
+    btc_inflow = market_trends(crypto)
 
 
 
@@ -49,12 +49,12 @@ def coinmarketcap_data(crypto):
     daily_volume_change = data['data']['1']['quote']['USD']['volume_change_24h']
     return market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change
 
-def exchange_data(crypto):
-    body = requests.get('https://markets.chainalysis.com/')
+def market_trends(crypto):
+    body = requests.get('https://www.binance.com/en/square/fear-and-greed-index')
     soup = BeautifulSoup(body.text, 'html.parser')
-    exchange_inflow = soup.find(class_="css-oeiwi0").text
-    print(exchange_inflow)
-    return None
+    fear_and_greed = soup.find(class_="css-cxlpc6").text
+    return fear_and_greed
 
 if __name__ == "__main__":
     main("ethereum")
+
