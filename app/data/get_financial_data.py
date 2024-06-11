@@ -11,17 +11,20 @@ from datetime import datetime as dt
 # Market trends can look at dominance at https://www.coingecko.com/en/coins/{crypto} <- crypto symbol not necessarily required.
 
 def main(crypto):    
-    path = f'./app/data/csvs/{crypto}.csv'
+    path = f'./app/data/csvs/{crypto}_financials.csv'
     if not os.path.exists(path):
-        print('table does not exist')
         with open(path, "w") as file:
-            file.write("Time,Price,Daily Volume,Daily Volume Change,Market Cap,1D Delta,7D Delta,BTC Inflow,BTC Outflow,F&G\n")
-        print('crypto file created')
+            file.write("Time,Price,Daily Volume,Daily Volume Change,Market Cap,1D Delta,7D Delta,F&G,BTC Netflow,USDT Netflow\n")
+        print(f'{path} file created')
+    data = pd.read_csv(path)
     time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
-    # market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change = coinmarketcap_data(crypto)
-    btc_inflow = market_trends(crypto)
-
-
+    market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change = coinmarketcap_data(crypto)
+    fear_and_greed, btc_netflow, usdt_netflow = market_trends(crypto)
+    # Add data to the end of the dataframe
+    data.loc[len(data)] = [time, price, daily_volume, daily_volume_change, market_cap, 
+        daily_change, weekly_change, fear_and_greed, btc_netflow, usdt_netflow]
+    data.to_csv(path, index=False)
+    return 'Success'
 
 def coinmarketcap_data(crypto):
     load_dotenv('./app/core/.env')
@@ -49,12 +52,18 @@ def coinmarketcap_data(crypto):
     daily_volume_change = data['data']['1']['quote']['USD']['volume_change_24h']
     return market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change
 
+
 def market_trends(crypto):
     body = requests.get('https://www.binance.com/en/square/fear-and-greed-index')
     soup = BeautifulSoup(body.text, 'html.parser')
     fear_and_greed = soup.find(class_="css-cxlpc6").text
-    return fear_and_greed
+    body = requests.get('https://cryptoleda.com/onchain/exchanges-netflow')
+    soup = BeautifulSoup(body.text, 'html.parser')
+    netflows = soup.find_all(class_="netFlow")
+    btc_netflow = netflows[0].text[7:]
+    usdt_netflow = netflows[2].text[7:]
+    return fear_and_greed, btc_netflow, usdt_netflow
 
 if __name__ == "__main__":
-    main("ethereum")
+    main("bitcoin")
 
