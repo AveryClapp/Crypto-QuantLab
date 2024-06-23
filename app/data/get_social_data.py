@@ -41,12 +41,18 @@ def get_reddit_data(token):
         for post in data['data']['children']:
             title = clean_text(post['data']['title'])
             selftext = clean_text(post['data'].get('selftext', ''))[:1000]
+            url = f"https://www.reddit.com{post['data']['permalink']}"
+
+            if not selftext.strip():
+                continue
+
             full_text = f"{title} {selftext}"
             sentiment = get_sentiment(full_text)
-
+            
             posts_data.append({
                 'title': title,
-                'selftext': selftext,                
+                'selftext': selftext,  
+                'url': url,              
                 'sentiment': sentiment,
             })
 
@@ -62,7 +68,7 @@ def get_reddit_data(token):
 def write_sentiment_to_csv(posts_data):
     path = './app/data/csvs/reddit_sentiment.csv'
     data = pd.read_csv(path)
-    columns = ['title', 'selftext', 'sentiment', 'timestamp']  
+    columns = ['title', 'selftext', 'sentiment', 'timestamp', 'url']  
     
     df = pd.read_csv(path)
     # Ensure all required columns are present
@@ -79,7 +85,8 @@ def write_sentiment_to_csv(posts_data):
             'title': post['title'],
             'selftext': post['selftext'][:50],  # Limit selftext to 1000 characters
             'sentiment': post['sentiment'],
-            'timestamp': time
+            'timestamp': time,
+            'url': post['url']
         })
     
     # Append new data to the DataFrame
