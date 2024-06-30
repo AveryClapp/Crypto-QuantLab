@@ -25,7 +25,9 @@ def main(crypto):
     try:
         response = s3.get_object(Bucket=bucket_name, Key=file)
         print(response)
-        data = pd.read_csv(io.BytesI0(response['Body'].read()))
+        csv_content=response['Body'].read().decode('utf-8')
+        data = pd.read_csv(io.StringIO(csv_content))
+        print(data)
     except Exception as e:
         print(e)
         data = pd.DataFrame(columns=["Time","Price","Daily Volume","Daily Volume Change","Market Cap",
