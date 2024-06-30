@@ -3,9 +3,9 @@ import requests.auth
 from dotenv import load_dotenv
 import os
 import pandas as pd
-
 from datetime import datetime
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from datetime import datetime as dt
 from collections import Counter
 import time
 import boto3
@@ -13,8 +13,14 @@ import io
 
 # Initialize VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
-
-load_dotenv('./app/core/.env')
+load_dotenv('/home/ec2-user/data/.env')
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+s3 = boto3.client('s3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name='us-east-2')
+bucket_name='cryptopltfdatabucket'
 
 def get_sentiment(text):
     return sia.polarity_scores(text)['compound']
@@ -33,7 +39,7 @@ def get_reddit_token():
 def get_reddit_data(token, crypto='Bitcoin', subreddits=['CryptoCurrency', 'CryptoMarkets']):
     username = os.getenv('REDDIT_USER')
     headers = {"Authorization": f"bearer {token}", "User-Agent": f"SentimentAnalysisBot/0.1 by {username}"}
-    params = {"limit": 200}  # Increased from 10 to 100
+    params = {"limit": 100}  # Increased from 10 to 100
     subreddits.append(crypto)
     all_posts_data = []
     for subreddit in subreddits:
@@ -55,51 +61,59 @@ def get_reddit_data(token, crypto='Bitcoin', subreddits=['CryptoCurrency', 'Cryp
                     'sentiment': sentiment,
                     'upvotes': post['data']['score'],
                     'created_at': datetime.fromtimestamp(post['data']['created_utc']).strftime("%Y-%m-%d %H:%M:%S")
-                })
+                })  
             time.sleep(2)  # To respect Reddit's rate limits
         except requests.exceptions.RequestException as e:
             print(f"Error collecting data from r/{subreddit}: {str(e)}")
+    write_articles_to_s3(all_posts_data)
     write_sentiment_to_s3(all_posts_data)
-    analyze_sentiment(all_posts_data)
     return all_posts_data
     
-def write_sentiment_to_s3(posts_data):
-    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-    s3 = boto3.client('s3',
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        region_name='us-east-2')
-    bucket_name='cryptopltfdatabucket'
-    articles_file = f'reddit_sentiment.csv'
-    sentiment_file = f'daily_sentimet.csv'
+def write_articles_to_s3(posts_data):
+    file = f'reddit_sentiment.csv'
     try:
         response = s3.get_object(Bucket=bucket_name, Key=file)
         csv_content=response['Body'].read().decode('utf-8')
         data = pd.read_csv(io.StringIO(csv_content))
     except:
         data = pd.DataFrame(columns=["subreddit","title","selftext","url","sentiment","upvotes","created_at"])
-
-    time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
     df = pd.DataFrame(posts_data)
     # Append new data to the existing CSV or create a new one
-    combined_data = df
+    combined_data = pd.concat([data, df], ignore_index=True)
     csv_buffer = io.StringIO()
     combined_data.to_csv(csv_buffer, index=False)
     s3.put_object(Bucket=bucket_name, Key=file, Body=csv_buffer.getvalue())
     print("Social Data Written to S3")
 
-def analyze_sentiment(posts_data):
+def write_sentiment_to_s3(posts_data):
     sentiments = [post['sentiment'] for post in posts_data]
-    average_sentiment = sum(sentiments) / len(sentiments) if sentiments else 0
-    
+    average_sentiment = round( sum(sentiments) / len(sentiments) if sentiments else 0, 3)
+    file = 'sentiment.csv'
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=file)
+        csv_content=response['Body'].read().decode('utf-8')
+        data = pd.read_csv(io.StringIO(csv_content))
+    except:
+        data = pd.DataFrame(columns=["Time, Average Sentiment, Article Count"])
+    time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
+    df = pd.DataFrame({
+        "Time": [time],
+        "Average Sentiment": [average_sentiment],
+        "Article Count": [len(sentiments)]
+    })
+    #Append new data to the existing CSV or create a new one
+    combined_data = pd.concat([data, df], ignore_index=True)
+    csv_buffer = io.StringIO()
+    combined_data.to_csv(csv_buffer, index=False)
+    s3.put_object(Bucket=bucket_name, Key=file, Body=csv_buffer.getvalue())
+    print("Sentiment Data Written to S3")
+
     # Keyword analysis
-    keywords = ['bitcoin', 'ethereum', 'crypto', 'blockchain', 'defi', 'nft', 'moon', 'wagmi', 'hodl', 'bear', 'bull, fomo']
-    keyword_counts = Counter()
-    for post in posts_data:
-        full_text = f"{post['title']} {post['selftext']}".lower()
-        keyword_counts.update(keyword for keyword in keywords if keyword in full_text)
-    return average_sentiment, keyword_counts
+    #keywords = ['bitcoin', 'ethereum', 'crypto', 'blockchain', 'defi', 'nft', 'moon', 'wagmi', 'hodl', 'bear', 'bull']
+    #keyword_counts = Counter()
+    #for post in posts_data:
+     #   full_text = f"{post['title']} {post['selftext']}".lower()
+      #  keyword_counts.update(keyword for keyword in keywords if keyword in full_text)
 
 def clean_text(text):
     return ' '.join(text.split()).replace('"', "'")
