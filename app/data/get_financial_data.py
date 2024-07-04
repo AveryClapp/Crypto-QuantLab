@@ -12,24 +12,22 @@ import io
 
 # Market trends can look at dominance at https://www.coingecko.com/en/coins/{crypto} <- crypto symbol not necessarily required.
 
+load_dotenv('./app/core/.env')
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+s3 = boto3.client('s3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name='us-east-2')
+bucket_name='cryptopltfdatabucket'
+
 def main(crypto):
-    load_dotenv('app/core/.env')
-    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-    s3 = boto3.client('s3',
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        region_name='us-east-2')
-    bucket_name='cryptopltfdatabucket'
     file = f'{crypto}_financials.csv'
     try:
         response = s3.get_object(Bucket=bucket_name, Key=file)
-        print(response)
         csv_content=response['Body'].read().decode('utf-8')
         data = pd.read_csv(io.StringIO(csv_content))
-        print(data)
-    except Exception as e:
-        print(e)
+    except:
         data = pd.DataFrame(columns=["Time","Price","Daily Volume","Daily Volume Change","Market Cap",
             "1D Delta","7D Delta","F&G","BTC Dominance","Stablecoin Volume","Total Market Cap"])
     time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
@@ -55,7 +53,6 @@ def main(crypto):
     return 'Success'
 
 def coinmarketcap_data(crypto):
-    load_dotenv('/home/ec2-user/data/.env')
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
     url2 = 'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest'
     api = os.getenv('CMC_KEY')
@@ -101,3 +98,4 @@ def market_trends(crypto):
 
 if __name__ == "__main__":
     main("bitcoin")
+                       

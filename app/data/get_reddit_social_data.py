@@ -13,7 +13,7 @@ import io
 
 # Initialize VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
-load_dotenv('/home/ec2-user/data/.env')
+load_dotenv('./app/core/.env')
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 s3 = boto3.client('s3',
