@@ -1,9 +1,15 @@
 import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import Home from "./Home/Home.tsx";
+import Home from "./Home/Home.jsx";
+import Header from "./Header/Header.jsx";
 
 function App() {
-  return <Home />;
+  return (
+    <main>
+      <Header />
+      <Home />
+    </main>
+  );
 }
 
 export default App;
