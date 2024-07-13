@@ -24,3 +24,22 @@
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+.text-transition {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.text-transition-enter {
+  opacity: 0;
+}
+
+.text-transition-enter-active {
+  opacity: 1;
+}
+
+.text-transition-exit {
+  opacity: 1;
+}
+
+.text-transition-exit-active {
+  opacity: 0;
+}
