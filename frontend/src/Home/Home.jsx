@@ -3,15 +3,16 @@ import { CCarousel, CCarouselItem, CImage } from "@coreui/react";
 import learnCryptoImage from "../assets/learn_crypto.jpeg";
 import tradeCryptoImage from "../assets/trade_crypto.png";
 import analyzeCryptoImage from "../assets/analyze_crypto.jpeg";
+
+const slides = [
+  { image: tradeCryptoImage, alt: "Trade Crypto", text: "Trade" },
+  { image: learnCryptoImage, alt: "Learn Crypto", text: "Test" },
+  { image: analyzeCryptoImage, alt: "Analyze Crypto", text: "Learn" },
+];
+
 export default function Home() {
   const [actionText, setActionText] = useState("Trade");
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const slides = [
-    { image: tradeCryptoImage, alt: "Trade Crypto", text: "Trade" },
-    { image: learnCryptoImage, alt: "Learn Crypto", text: "Test" },
-    { image: analyzeCryptoImage, alt: "Analyze Crypto", text: "Learn" },
-  ];
 
   useEffect(() => {
     setActionText(slides[activeIndex].text);

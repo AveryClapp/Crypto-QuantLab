@@ -25,9 +25,12 @@ export default function TradeInfo() {
       observer.observe(fadeRef.current);
     }
 
+    // Capture the current value of fadeRef
+    const currentRef = fadeRef.current;
+
     return () => {
-      if (fadeRef.current) {
-        observer.unobserve(fadeRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, []);
