@@ -14,25 +14,25 @@ from app.models import FinancialData
 
 
 load_dotenv()
-db = get_db()
+db = next(get_db())
 
 def main(crypto):
     try:
         time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
         market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change, btc_dominance, stablecoin_volume, total_mc = coinmarketcap_data(crypto)
         fear_and_greed = market_trends(crypto)
-        new_row = FinancialData(
-            time: time,
-            price: round(price, 2),
-            daily_volume: round(daily_volume, 2),
-            daily_volume_change: round(daily_volume_change, 2),
-            market_cap: round(market_cap, 2),
-            daily_delta: round(daily_change, 2),
-            weekly_delta: round(weekly_change, 2),
-            fear_and_greed: int(fear_and_greed),
-            btc_dominance: round(btc_dominance, 2),
-            stablecoin_volume: round(stablecoin_volume, 2),
-            total_market_cap: round(total_mc, 2)
+        new_data = FinancialData(
+            time = time,
+            price = round(price, 2),
+            daily_volume = round(daily_volume, 2),
+            daily_volume_change = round(daily_volume_change, 2),
+            market_cap = round(market_cap, 2),
+            daily_delta = round(daily_change, 2),
+            weekly_delta = round(weekly_change, 2),
+            fear_and_greed = int(fear_and_greed),
+            btc_dominance = round(btc_dominance, 2),
+            stablecoin_volume = round(stablecoin_volume, 2),
+            total_market_cap = round(total_mc, 2)
         )
         db.add(new_data)
         db.commit()
@@ -41,8 +41,8 @@ def main(crypto):
     except Exception as e:
         print(f"Error: {e}")
         db.rollback()
-        return 'Failure'
-
+    finally:
+        db.close()
 def coinmarketcap_data(crypto):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
     url2 = 'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest'

@@ -1,65 +1,30 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import FinancialData
+from app.models import FinancialData, PostData
+from app.schemas import FinancialDataCreate, FinancialDataResponse, PostCreate, PostResponse, PostUpdate
 
 router = APIRouter()
 
-@router.post("/financial_data/")
-async def create_financial_data(data: FinancialData, db: Session = Depends(get_db)):
-    """
-    Create a new financial data entry in the database.
-    """
+# FinancialData Routes
+@router.post("/financial_data/", response_model=FinancialDataResponse)
+def create_financial_data(data: FinancialDataCreate, db: Session = Depends(get_db)):
     new_data = FinancialData(**data.dict())
-    db.add(data)
+    print("Here")
+    db.add(new_data)
     db.commit()
-    db.refresh(data)
-    return data
+    db.refresh(new_data)
+    return new_data
 
-@router.get("/financial_data/{data_id}")
-async def get_financial_data(data_id: int, db: Session = Depends(get_db)):
-    """
-    Retrieve a specific financial data entry by its ID.
-    """
+
+@router.get("/financial_data/{data_id}", response_model=FinancialDataResponse)
+def get_financial_data(data_id: int, db: Session = Depends(get_db)):
     data = db.query(FinancialData).filter(FinancialData.id == data_id).first()
     if not data:
-        raise HTTPException(status_code=404, detail="Data not found")
+        raise HTTPException(status_code=404, detail="Financial data not found")
     return data
 
-@router.get("/financial_data/")
-async def list_financial_data(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    """
-    List financial data entries with optional pagination.
-    """
-    data = db.query(FinancialData).offset(skip).limit(limit).all()
-    return data
 
-@router.put("/financial_data/{data_id}")
-async def update_financial_data(data_id: int, updated_data: FinancialData, db: Session = Depends(get_db)):
-    """
-    Update a specific financial data entry by its ID.
-    """
-    updated_data = FinancialData(**data.dict())
-    data = db.query(FinancialData).filter(FinancialData.id == data_id).first()
-    if not data:
-        raise HTTPException(status_code=404, detail="Data not found")
-    
-    for key, value in updated_data.dict(exclude_unset=True).items():
-        setattr(data, key, value)
-    db.commit()
-    db.refresh(data)
-    return data
-
-@router.delete("/financial_data/{data_id}")
-async def delete_financial_data(data_id: int, db: Session = Depends(get_db)):
-    """
-    Delete a specific financial data entry by its ID.
-    """
-    data = db.query(FinancialData).filter(FinancialData.id == data_id).first()
-    if not data:
-        raise HTTPException(status_code=404, detail="Data not found")
-    
-    db.delete(data)
-    db.commit()
-    return {"detail": f"Data with ID {data_id} deleted successfully"}
-
+@router.get("/financial_data/", response_model=list[FinancialDataResponse])
+def list_financial_data(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return db.query(FinancialData).offset(skip).limit(limit).all()

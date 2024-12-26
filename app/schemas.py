@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
+
 
 class FinancialDataBase(BaseModel):
     time: datetime
@@ -13,15 +15,18 @@ class FinancialDataBase(BaseModel):
     btc_dominance: float
     stablecoin_volume: float
     total_market_cap: float
-    
+
     class Config:
-        orm_mode = True  
+        orm_mode = True
+
 
 class FinancialDataCreate(FinancialDataBase):
     pass
 
+
 class FinancialDataResponse(FinancialDataBase):
     id: int
+
 
 class PostBase(BaseModel):
     title: str
@@ -35,8 +40,14 @@ class PostBase(BaseModel):
     class Config:
         orm_mode = True
 
+
 class PostCreate(PostBase):
     pass
+
+
+class PostResponse(PostBase):
+    id: int
+
 
 class PostUpdate(BaseModel):
     title: Optional[str]
@@ -48,7 +59,3 @@ class PostUpdate(BaseModel):
 
     class Config:
         orm_mode = True
-
-class PostResponse(PostBase):
-    id: int
-
