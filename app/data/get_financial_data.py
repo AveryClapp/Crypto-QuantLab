@@ -35,7 +35,9 @@ def main(crypto):
             total_market_cap = round(total_mc, 2)
         )
         db.add(new_data)
+        print("Data Added")
         db.commit()
+        print("Data Committed")
         db.refresh(new_data)
         return 'Success'
     except Exception as e:
@@ -54,13 +56,11 @@ def coinmarketcap_data(crypto):
     }
     try:
         response = requests.get(url, params=parameters, headers=headers)
-        response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+        response.raise_for_status()  
         data = response.json()
-        # Process the received data
     except Exception as e:
         print(f"Error occurred while making the API request: {e}")
         return 'Error with request'
-        # Handle the error appropriately
     market_cap = data['data']['1']['quote']['USD']['market_cap']
     price = data['data']['1']['quote']['USD']['price']
     daily_change = data['data']['1']['quote']['USD']['percent_change_24h']
@@ -77,8 +77,7 @@ def coinmarketcap_data(crypto):
     btc_dominance = data['data']['btc_dominance']
     stablecoin_volume = data['data']['quote']['USD']['stablecoin_volume_24h']
     total_market_cap = data['data']['quote']['USD']['total_market_cap']
-    return market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change, \
-        btc_dominance, stablecoin_volume, total_market_cap
+    return market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change, btc_dominance, stablecoin_volume, total_market_cap
 
 
 def market_trends(crypto):
