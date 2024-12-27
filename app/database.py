@@ -7,16 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 db_pass = os.environ.get("DB_PASS")
-connection = pymysql.connect(
-    user='root',
-    host='127.0.0.1',
-    port=3306,
-    password=db_pass,
-    database='crypto-pltf',
-    cursorclass=pymysql.cursors.DictCursor
-)
 
-engine = create_engine('mysql+pymysql://', creator=lambda: connection)
+DATABASE_URL = f"mysql+pymysql://root:aclapp1@127.0.0.1:3306/crypto-pltf"
+
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

@@ -18,7 +18,7 @@ db = next(get_db())
 
 def main(crypto):
     try:
-        time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
+        time = dt.utcnow()
         market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change, btc_dominance, stablecoin_volume, total_mc = coinmarketcap_data(crypto)
         fear_and_greed = market_trends(crypto)
         new_data = FinancialData(

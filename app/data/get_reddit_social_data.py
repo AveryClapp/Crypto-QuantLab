@@ -9,14 +9,14 @@ from datetime import datetime as dt
 from collections import Counter
 import time
 import io
-from app.models import SentimentData
-from app.databse import get_db
+from app.models import PostData
+from app.database import get_db
 
 
 # Initialize VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
 load_dotenv('./app/core/.env')
-db = get_db()
+db = next(get_db())
 
 def get_sentiment(text):
     return sia.polarity_scores(text)['compound']
@@ -65,24 +65,26 @@ def get_reddit_data(token, crypto='Bitcoin', subreddits=['CryptoCurrency', 'Cryp
     return all_posts_data
     
 def store_data(posts_data):
-    time = dt.utcnow().strftime("%m-%d-%Y %H:%M:%S")
+    time = dt.utcnow()
     for post in posts_data:
         try:
             new_row = PostData(
-                title:  post.title,
-                subreddit: post.subreddit,
-                description: post.selftext,
-                url: post.url,
-                sentiment: post.sentiment,
-                upvotes: post.upvotes,
-                created_at: time
+                title = post.title,
+                subreddit = post.subreddit,
+                description = post.selftext,
+                url = post.url,
+                sentiment = post.sentiment,
+                upvotes = post.upvotes,
+                created_at = time
                 )
             db.add(new_row)
             db.commit()
             db.refresh(new_row)
-        catch Exception as e:
+        except Exception as e:
             db.rollback()
             return f'Failure {e}'
+        finally:
+            db.close()
     return "Successfully get and store sentiment data"
 
 def clean_text(text):
