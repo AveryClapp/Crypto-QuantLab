@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import pandas as pd
 import json
-from datetime import datetime as dt
+from datetime import datetime, timezone
 import boto3
 import io
 from app.database import get_db
@@ -18,7 +18,7 @@ db = next(get_db())
 
 def main(crypto):
     try:
-        time = dt.utcnow()
+        time = datetime.now(timezone.utc)
         market_cap, price, daily_change, weekly_change, daily_volume, daily_volume_change, btc_dominance, stablecoin_volume, total_mc = coinmarketcap_data(crypto)
         fear_and_greed = market_trends(crypto)
         new_data = FinancialData(

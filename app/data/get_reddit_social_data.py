@@ -2,10 +2,8 @@ import requests
 import requests.auth
 from dotenv import load_dotenv
 import os
-import pandas as pd
-from datetime import datetime
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from datetime import datetime as dt
+from datetime import datetime, timezone
 from collections import Counter
 import time
 import io
@@ -15,7 +13,7 @@ from app.database import get_db
 
 # Initialize VADER sentiment analyzer
 sia = SentimentIntensityAnalyzer()
-load_dotenv('./app/core/.env')
+load_dotenv()
 db = next(get_db())
 
 def get_sentiment(text):
@@ -35,7 +33,7 @@ def get_reddit_token():
 def get_reddit_data(token, crypto='Bitcoin', subreddits=['CryptoCurrency', 'CryptoMarkets']):
     username = os.getenv('REDDIT_USER')
     headers = {"Authorization": f"bearer {token}", "User-Agent": f"SentimentAnalysisBot/0.1 by {username}"}
-    params = {"limit": 100}  # Increased from 10 to 100
+    params = {"limit": 5}  
     subreddits.append(crypto)
     all_posts_data = []
     for subreddit in subreddits:
@@ -56,35 +54,32 @@ def get_reddit_data(token, crypto='Bitcoin', subreddits=['CryptoCurrency', 'Cryp
                     'url': url,
                     'sentiment': sentiment,
                     'upvotes': post['data']['score'],
-                    'created_at': datetime.fromtimestamp(post['data']['created_utc']).strftime("%Y-%m-%d %H:%M:%S")
+                    'created_at': datetime.fromtimestamp(post['data']['created_utc'])
                 })  
-            time.sleep(2)  # To respect Reddit's rate limits
+            time.sleep(1)
         except requests.exceptions.RequestException as e:
             print(f"Error collecting data from r/{subreddit}: {str(e)}")
-    store_data(all_posts_data)
-    return all_posts_data
+    return store_data(all_posts_data)
     
 def store_data(posts_data):
-    time = dt.utcnow()
-    for post in posts_data:
-        try:
+    try:
+        for post in posts_data:
             new_row = PostData(
-                title = post.title,
-                subreddit = post.subreddit,
-                description = post.selftext,
-                url = post.url,
-                sentiment = post.sentiment,
-                upvotes = post.upvotes,
-                created_at = time
+                    title = post['title'][:100],
+                    subreddit = post['subreddit'][:100],
+                    description = post['selftext'][:100],
+                    url = post['url'][:100],
+                sentiment = post['sentiment'],
+                upvotes = post['upvotes'],
+                created_at = post['created_at']
                 )
             db.add(new_row)
-            db.commit()
-            db.refresh(new_row)
-        except Exception as e:
-            db.rollback()
-            return f'Failure {e}'
-        finally:
-            db.close()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        return f'Failure {e}'
+    finally:
+        db.close()
     return "Successfully get and store sentiment data"
 
 def clean_text(text):
@@ -92,4 +87,4 @@ def clean_text(text):
 
 if __name__ == '__main__':
     token = get_reddit_token()
-    reddit_data = get_reddit_data(token)
+    print(get_reddit_data(token))
