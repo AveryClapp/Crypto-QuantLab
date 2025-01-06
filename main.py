@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.finance_routes import router as api_router
+from app.api.finance_routes import router as finance_router
+from app.api.sentiment_routes import router as sentiment_router
 
 app = FastAPI()
 
@@ -19,7 +20,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix="/api")
+app.include_router(finance_router, prefix="/api")
+app.include_router(sentiment_router, prefix="/api")
 
 @app.get("/")
 async def main():
