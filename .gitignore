@@ -16,7 +16,7 @@ venv/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
+*.swp
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
