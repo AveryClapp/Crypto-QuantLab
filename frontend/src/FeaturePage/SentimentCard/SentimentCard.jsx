@@ -1,7 +1,25 @@
 // src/components/SentimentCard.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const SentimentCard = ({ data }) => {
+const SentimentCard = ({ data, average }) => {
+	const [positivePercentage, setPositivePercentage] = useState(null);
+	const [neutralPercentage, setNeutralPercentage] = useState(null);
+	const [negativePercentage, setNegativePercentage] = useState(null);
+	
+	useEffect(() => {
+		function calculatePercentages() {
+				const numPositive = data[0].length;
+				const numNeutral = data[2].length;
+				const numNegative = data[1].length;
+				const totalPosts = numPositive + numNeutral + numNegative;
+				setPositivePercentage(Math.round(numPositive / totalPosts * 100));
+				setNeutralPercentage(Math.round(numNeutral / totalPosts * 100));
+				setNegativePercentage(Math.round(numNegative / totalPosts * 100));
+		};
+		calculatePercentages();
+	}
+	, [data]);
+
   return (
     <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-lg shadow-lg">
       <h3 className="text-2xl font-semibold mb-2">{data.title}</h3>
@@ -9,14 +27,17 @@ const SentimentCard = ({ data }) => {
       {/* Example Sentiment Metrics */}
       <div className="flex space-x-4">
         <div>
-          <span className="font-bold">Positive:</span> {data.positive}%
+          <span className="font-bold">Positive:</span> {positivePercentage}%
         </div>
         <div>
-          <span className="font-bold">Neutral:</span> {data.neutral}%
+          <span className="font-bold">Neutral:</span> {neutralPercentage}%
         </div>
         <div>
-          <span className="font-bold">Negative:</span> {data.negative}%
+          <span className="font-bold">Negative:</span> {negativePercentage}%
         </div>
+		<div>
+		  <span className="font-bold">Average Sentiment Score:</span> {average * 100}%
+		</div>
       </div>
     </div>
   );

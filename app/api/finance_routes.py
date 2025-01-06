@@ -16,13 +16,8 @@ def create_financial_data(data: FinancialDataCreate):
     return new_data
 
 
-@router.get("/financial_data/", response_model=FinancialDataResponse)
-def get_financial_data(data_id: int):
-    return db.query(FinancialData).first()
-
-
 @router.get("/financial_data/{limit}", response_model=list[FinancialDataResponse])
-def list_financial_data(skip: int = 0, limit: int = 10):
+def list_financial_data(skip: int, limit: int):
     return db.query(FinancialData).offset(skip).limit(limit).all()
 
 # What other endpoints would be good here?

@@ -1,6 +1,6 @@
 // src/pages/FeaturePage.js
 import React, { useEffect, useState } from 'react';
-import { fetchSentiment, popularPosts, recentFinancialData } from './services/api';
+import { fetchSentiment, popularPosts, recentFinancialData, postDistribution } from './services/api';
 import SentimentCard from './SentimentCard/SentimentCard.jsx';
 import PopularPosts from './PopularPosts/PopularPosts.jsx';
 import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
@@ -9,21 +9,23 @@ const FeaturePage = () => {
   // State management
   const [sentimentData, setSentimentData] = useState(null);
   const [popularPostsData, setPopularPostsData] = useState([]);
-  const [financialData, setFinancialData] = useState(null);
+  const [averageSentiment, setAverageSentiment] = useState(null);
+  //const [financialData, setFinancialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sentiment = await fetchSentiment(1);
-        const posts = await popularPosts(1);
-        const financial = await recentFinancialData(2);
+        const post_distribution = await postDistribution();
+		const avg_sentiment = await fetchSentiment(); 
+        const posts = await popularPosts();
+        //const financial = await recentFinancialData();
 
-        setSentimentData(sentiment);
+        setSentimentData(post_distribution);
+		setAverageSentiment(avg_sentiment);
         setPopularPostsData(posts);
-        setFinancialData(financial);
+        //setFinancialData(financial);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -58,20 +60,20 @@ const FeaturePage = () => {
       {/* Sentiment Analysis Section */}
       <section className="mb-12">
         <h2 className="text-3xl font-bold mb-4">Sentiment Analysis</h2>
-        {sentimentData && <SentimentCard data={sentimentData} />}
+        {sentimentData && <SentimentCard data={sentimentData} average={averageSentiment} />}
       </section>
 
       {/* Popular Posts Section */}
       <section className="mb-12">
         <h2 className="text-3xl font-bold mb-4">Popular Posts</h2>
-        <PopularPosts posts={popularPostsData} />
+        	<PopularPosts posts={popularPostsData} />
       </section>
 
       {/* Financial Data Section */}
-      <section className="mb-12">
+		  {/*	  <section className="mb-12">
         <h2 className="text-3xl font-bold mb-4">Recent Financial Data</h2>
         {financialData && <FinancialDataChart data={financialData} />}
-      </section>
+      </section> */}
     </main>
   );
 };

@@ -9,9 +9,9 @@ const PostCard = ({ post }) => {
       )}
       <div className="p-4">
         <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-        <p className="text-gray-600 mb-4">{post.excerpt}</p>
+        <p className="text-gray-600 mb-4">{post.description}</p>
         <a
-          href={post.link}
+          href={post.url}
           className="text-indigo-600 hover:text-indigo-800 font-semibold"
           target="_blank"
           rel="noopener noreferrer"
