@@ -1,9 +1,9 @@
 // src/pages/FeaturePage.js
 import React, { useEffect, useState } from 'react';
-import { fetchSentiment, popularPosts, recentFinancialData, postDistribution } from './services/api';
+import { fetchSentiment, popularPosts, postDistribution } from './services/api';
 import SentimentCard from './SentimentCard/SentimentCard.jsx';
 import PopularPosts from './PopularPosts/PopularPosts.jsx';
-import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
+//import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
 
 const FeaturePage = () => {
   // State management
