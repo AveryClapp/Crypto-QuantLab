@@ -1,6 +1,6 @@
 import React from "react";
 import { useRef, useEffect, useState } from "react";
-import Graph from "../Common/Graph.jsx";
+import Graph from "../../Common/Graph.jsx";
 
 export default function TradeInfo() {
   const fadeRef = useRef(null);

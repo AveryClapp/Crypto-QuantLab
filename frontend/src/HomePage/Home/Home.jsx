@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { CCarousel, CCarouselItem, CImage } from "@coreui/react";
-import learnCryptoImage from "../assets/learn_crypto.jpeg";
-import tradeCryptoImage from "../assets/trade_crypto.png";
-import analyzeCryptoImage from "../assets/analyze_crypto.jpeg";
+import learnCryptoImage from "../../assets/learn_crypto.jpeg";
+import tradeCryptoImage from "../../assets/trade_crypto.png";
+import analyzeCryptoImage from "../../assets/analyze_crypto.jpeg";
+import Header from "../Header/Header.jsx";
+import TradeInfo from "../TradeInfo/TradeInfo.jsx";
+import Footer from "../Footer/Footer.jsx";
+import Sell from "../Sell/Sell.jsx";
+
 
 const slides = [
   { image: tradeCryptoImage, alt: "Trade Crypto", text: "Trade" },
