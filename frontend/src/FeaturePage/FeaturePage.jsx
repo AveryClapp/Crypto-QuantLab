@@ -1,16 +1,15 @@
 // src/pages/FeaturePage.js
 import React, { useEffect, useState } from 'react';
-import { fetchSentiment, popularPosts, postDistribution } from './services/api';
+import { fetchSentiment, postDistribution, recentFinancialData } from './services/api';
 import SentimentCard from './SentimentCard/SentimentCard.jsx';
 import PopularPosts from './PopularPosts/PopularPosts.jsx';
-//import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
+import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
 
 const FeaturePage = () => {
   // State management
   const [sentimentData, setSentimentData] = useState(null);
-  const [popularPostsData, setPopularPostsData] = useState([]);
   const [averageSentiment, setAverageSentiment] = useState(null);
-  //const [financialData, setFinancialData] = useState(null);
+  const [financialData, setFinancialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   // Fetch data on component mount
@@ -19,13 +18,11 @@ const FeaturePage = () => {
       try {
         const post_distribution = await postDistribution();
 		const avg_sentiment = await fetchSentiment(); 
-        const posts = await popularPosts();
-        //const financial = await recentFinancialData();
+        const financial = await recentFinancialData();
 
         setSentimentData(post_distribution);
 		setAverageSentiment(avg_sentiment);
-        setPopularPostsData(posts);
-        //setFinancialData(financial);
+        setFinancialData(financial);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -65,15 +62,15 @@ const FeaturePage = () => {
 
       {/* Popular Posts Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-4">Popular Posts</h2>
-        	<PopularPosts posts={popularPostsData} />
+        <h2 className="text-3xl font-bold mb-4">Recent Posts</h2>
+        	<PopularPosts />
       </section>
 
       {/* Financial Data Section */}
-		  {/*	  <section className="mb-12">
+	  <section className="mb-12">
         <h2 className="text-3xl font-bold mb-4">Recent Financial Data</h2>
         {financialData && <FinancialDataChart data={financialData} />}
-      </section> */}
+      </section>
     </main>
   );
 };

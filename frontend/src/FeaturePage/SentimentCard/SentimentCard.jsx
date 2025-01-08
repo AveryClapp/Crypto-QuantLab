@@ -8,13 +8,20 @@ const SentimentCard = ({ data, average }) => {
 	
 	useEffect(() => {
 		function calculatePercentages() {
-				const numPositive = data[0].length;
-				const numNeutral = data[2].length;
-				const numNegative = data[1].length;
-				const totalPosts = numPositive + numNeutral + numNegative;
-				setPositivePercentage(Math.round(numPositive / totalPosts * 100));
-				setNeutralPercentage(Math.round(numNeutral / totalPosts * 100));
-				setNegativePercentage(Math.round(numNegative / totalPosts * 100));
+				if (data) {
+						const numPositive = data[0].length;
+						const numNeutral = data[2].length;
+						const numNegative = data[1].length;
+						const totalPosts = numPositive + numNeutral + numNegative;
+						setPositivePercentage(Math.round(numPositive / totalPosts * 100) + "%");
+						setNeutralPercentage(Math.round(numNeutral / totalPosts * 100) + "%");
+						setNegativePercentage(Math.round(numNegative / totalPosts * 100) + "%");
+				} else {
+					console.log("Here");
+					setPositivePercentage("Data Unavailable");
+					setNeutralPercentage("Data Unavailable");
+					setNegativePercentage("Data Unavailable");
+				}
 		};
 		calculatePercentages();
 	}
@@ -27,16 +34,16 @@ const SentimentCard = ({ data, average }) => {
       {/* Example Sentiment Metrics */}
       <div className="flex space-x-4">
         <div>
-          <span className="font-bold">Positive:</span> {positivePercentage}%
+          <span className="font-bold">Positive:</span> {positivePercentage}
         </div>
         <div>
-          <span className="font-bold">Neutral:</span> {neutralPercentage}%
+          <span className="font-bold">Neutral:</span> {neutralPercentage}
         </div>
         <div>
-          <span className="font-bold">Negative:</span> {negativePercentage}%
+          <span className="font-bold">Negative:</span> {negativePercentage}
         </div>
 		<div>
-		  <span className="font-bold">Average Sentiment Score:</span> {average * 100}%
+		  <span className="font-bold">Average Sentiment Score:</span> {Math.round(average * 100)}
 		</div>
       </div>
     </div>
