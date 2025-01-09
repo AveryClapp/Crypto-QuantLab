@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 
 const SentimentCard = ({ data, average }) => {
-	const [positivePercentage, setPositivePercentage] = useState(null);
-	const [neutralPercentage, setNeutralPercentage] = useState(null);
-	const [negativePercentage, setNegativePercentage] = useState(null);
+	const [positivePercentage, setPositivePercentage] = useState("");
+	const [neutralPercentage, setNeutralPercentage] = useState("");
+	const [negativePercentage, setNegativePercentage] = useState("");
 	
 	useEffect(() => {
 		function calculatePercentages() {
@@ -13,14 +13,13 @@ const SentimentCard = ({ data, average }) => {
 						const numNeutral = data[2].length;
 						const numNegative = data[1].length;
 						const totalPosts = numPositive + numNeutral + numNegative;
-						setPositivePercentage(Math.round(numPositive / totalPosts * 100) + "%");
-						setNeutralPercentage(Math.round(numNeutral / totalPosts * 100) + "%");
-						setNegativePercentage(Math.round(numNegative / totalPosts * 100) + "%");
+						setPositivePercentage(`${Math.round((numPositive / totalPosts) * 100)}%`);
+						setNeutralPercentage(`${Math.round((numNeutral / totalPosts) * 100)}%`);
+						setNegativePercentage(`${Math.round((numNegative / totalPosts) * 100)}%`);
 				} else {
-					console.log("Here");
-					setPositivePercentage("Data Unavailable");
-					setNeutralPercentage("Data Unavailable");
-					setNegativePercentage("Data Unavailable");
+						setPositivePercentage("0%");
+						setNeutralPercentage("0%");
+						setNegativePercentage("0%");
 				}
 		};
 		calculatePercentages();
@@ -43,7 +42,7 @@ const SentimentCard = ({ data, average }) => {
           <span className="font-bold">Negative:</span> {negativePercentage}
         </div>
 		<div>
-		  <span className="font-bold">Average Sentiment Score:</span> {Math.round(average * 100)}
+		  <span className="font-bold">Average Sentiment Score:</span> {Math.round(average * 100) + "%"}
 		</div>
       </div>
     </div>

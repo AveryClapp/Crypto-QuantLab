@@ -24,15 +24,15 @@ def main(crypto):
         new_data = FinancialData(
             time = time,
             price = round(price, 2),
-            daily_volume = round(daily_volume, 2),
+            daily_volume = round(daily_volume),
             daily_volume_change = round(daily_volume_change, 2),
-            market_cap = round(market_cap, 2),
+            market_cap = round(market_cap),
             daily_delta = round(daily_change, 2),
             weekly_delta = round(weekly_change, 2),
             fear_and_greed = int(fear_and_greed),
             btc_dominance = round(btc_dominance, 2),
-            stablecoin_volume = round(stablecoin_volume, 2),
-            total_market_cap = round(total_mc, 2)
+            stablecoin_volume = round(stablecoin_volume),
+            total_market_cap = round(total_mc)
         )
         db.add(new_data)
         print("Data Added")

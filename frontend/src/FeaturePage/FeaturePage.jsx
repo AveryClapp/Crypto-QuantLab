@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchSentiment, postDistribution, recentFinancialData } from './services/api';
 import SentimentCard from './SentimentCard/SentimentCard.jsx';
 import PopularPosts from './PopularPosts/PopularPosts.jsx';
-import FinancialDataChart from './FinancialDataChart/FinancialDataChart.jsx';
+import MetricsTable from './FinancialDataChart/FinancialDataChart.jsx';
 
 const FeaturePage = () => {
   // State management
@@ -22,7 +22,7 @@ const FeaturePage = () => {
 
         setSentimentData(post_distribution);
 		setAverageSentiment(avg_sentiment);
-        setFinancialData(financial);
+        setFinancialData(financial[0]);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -69,7 +69,7 @@ const FeaturePage = () => {
       {/* Financial Data Section */}
 	  <section className="mb-12">
         <h2 className="text-3xl font-bold mb-4">Recent Financial Data</h2>
-        {financialData && <FinancialDataChart data={financialData} />}
+        {financialData && <MetricsTable metrics={financialData} />}
       </section>
     </main>
   );
