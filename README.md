@@ -6,16 +6,13 @@ A focused cryptocurrency trading platform leveraging machine learning for price 
 ## Key Components
 
 ### ML Price Analysis
-- Time series forecasting (LSTM/GRU)
-- Technical indicators integration
-- Market sentiment analysis
-- Anomaly detection
+[x] Time series forecasting (LSTM/GRU)
+[x] Market sentiment analysis
 
 ### Risk Management
 - Position sizing
 - Stop-loss optimization
 - Portfolio exposure limits
-- Drawdown protection
 
 ### Performance Analytics
 - Strategy backtesting
