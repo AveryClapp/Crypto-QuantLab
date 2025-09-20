@@ -1,13 +1,18 @@
 # Crypto Trading Platform
 
 ## Overview
-A focused cryptocurrency trading platform leveraging machine learning for price analysis and automated trading strategies. Currently prioritizing core functionality over user-facing features.
+A quantitative research backed cryptocurrency trading utility site for smarter and unique investment styles.
 
 ## Key Components
 
 ### ML Price Analysis
 [x] Time series forecasting (LSTM/GRU)
 [x] Market sentiment analysis
+
+### Math and Stats
+- Brownian Motion
+- Stochstic 
+- Cointegration
 
 ### Risk Management
 - Position sizing
