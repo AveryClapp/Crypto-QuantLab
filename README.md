@@ -79,10 +79,11 @@ trade = I(|z| > 2)
 
 ```bash
 # Install
-pip install numpy pandas scipy scikit-learn yfinance matplotlib
+uv sync --refresh
+source .venv/bin/activate
 
 # Run
-python crypto_quantlab.py
+crypto-quantlab
 ```
 
 **Output:** Complete quantitative research report in under 30 seconds.
@@ -117,13 +118,8 @@ def regime_switching(self):
     # Markov state transitions
 ```
 
-### Production Features
-```python
-def real_time_signals(self):
-    # Live trading signals
-    
-def risk_monitoring(self):
-    # Position size limits
-```
-
+### New Features Coming Soon:
+- [ ] Interactive web playground to sandbox different portfolios
+- [ ] Integration with coinbase account to run metrics
+- [ ] Better Integration Test (Johansen)
 ---
