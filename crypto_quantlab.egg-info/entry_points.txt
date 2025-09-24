@@ -1,0 +1,2 @@
+[console_scripts]
+crypto-quantlab = crypto_quantlab:main
