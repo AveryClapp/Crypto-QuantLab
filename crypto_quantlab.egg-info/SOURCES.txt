@@ -1,9 +1,0 @@
-README.md
-crypto_quantlab.py
-pyproject.toml
-crypto_quantlab.egg-info/PKG-INFO
-crypto_quantlab.egg-info/SOURCES.txt
-crypto_quantlab.egg-info/dependency_links.txt
-crypto_quantlab.egg-info/entry_points.txt
-crypto_quantlab.egg-info/requires.txt
-crypto_quantlab.egg-info/top_level.txt
