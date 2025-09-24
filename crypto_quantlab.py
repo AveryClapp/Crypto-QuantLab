@@ -281,8 +281,6 @@ class CryptoQuantLab:
             print(f"• Total opportunity value: ${self.results['arbitrage']['total_opportunity_value']:.2f}")
 
 
-        return self.results
-
 def main():
     """Run the complete analysis"""
     lab = CryptoQuantLab()
@@ -296,9 +294,7 @@ def main():
     lab.quantify_cointegration_arbitrage()
 
     # Generate final report
-    results = lab.generate_summary_report()
-
-    return lab, results
+    lab.generate_summary_report()
 
 if __name__ == "__main__":
-    lab, results = main()
+    main()
