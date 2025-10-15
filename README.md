@@ -1,125 +1,88 @@
 # Crypto QuantLab
 
+Quick quantitative analysis for crypto markets.
 
-> **A single Python script that makes your quantitative finance resume bulletproof.**
+## What It Does
 
-## Overview
+- **Cointegration testing** (Johansen) with 10,000 Monte Carlo bootstrap simulations
+- **Systematic strategies** - momentum + mean reversion
+- **Portfolio optimization** - mean-variance framework
+- **Statistical arbitrage** - pairs trading on cointegrated assets
+- **Comprehensive backtesting**
 
-300 lines of code that run:
-- Bayesian VECM with 10,000 MCMC simulations
-- Systematic momentum and mean reversion strategies
-- Modern Portfolio Theory optimization
-- Statistical arbitrage detection
-- Comprehensive backtesting framework
+**Result:** Full quant analysis in 30 seconds.
 
-**Result:** Verified quantitative research experience in 30 seconds.
+## Quick Math
 
-## The Math
+### Cointegration
 
-### Bayesian VECM
 ```
-Bootstrap sampling → Correlation estimation → Cointegration probability
-P(cointegration) = Σ I(ρ > 0.3) / 10,000
+Johansen test → trace statistic vs critical value
+Bootstrap: resample 10,000x, test each → probability
 ```
 
-### Systematic Strategies
+### Strategies
+
 ```
-Momentum: positions = rank(Σ returns[t-21:t])
-Mean Reversion: positions = I(|z-score| > 2)
+Momentum: rank(Σ returns[-21:]) → long winners, short losers
+Mean Reversion: z-score → fade extremes (|z| > 2)
 Combined: (momentum + mean_reversion) / 2
 ```
 
-### Portfolio Optimization
+### Portfolio
+
 ```
 maximize: (μᵀw) / √(wᵀΣw)
 subject to: Σwᵢ = 1, wᵢ ≥ 0
 ```
 
-### Arbitrage Detection
-```
-spread = price₁ - β × price₂
-z-score = (spread - μ) / σ
-trade = I(|z| > 2)
-```
-
-## Report Structure
+### Arbitrage
 
 ```
-📊 Data Analysis
-• 5 assets, 365 days, 1,825 observations
-
-🧮 Bayesian VECM Analysis  
-• 10,000 MCMC simulations
-• Cointegration probability: 0.847
-• Arbitrage pairs: 3 found
-
-📈 Systematic Strategies
-• Momentum Sharpe: 0.892
-• Mean reversion Sharpe: 1.156  
-• Combined Sharpe: 1.234
-
-⚖️ Portfolio Optimization
-• Optimal Sharpe: 1.45
-• Expected return: 28.7%
-• Volatility: 19.8%
-
-🔬 Backtest Results
-• Total return: 34.2%
-• Max drawdown: -12.5%
-• Win rate: 58.3%
-
-🎯 Arbitrage Analysis
-• Active opportunities: 2
-• Total value: $1,247.83
-
-✅ Resume bullets verified
+spread = price₁ - β×price₂
+z = (spread - μ) / σ
+trade when |z| > 2
 ```
 
-## How to Run
+## Run It
 
 ```bash
-# Install
-uv sync --refresh
-source .venv/bin/activate
+pip install numpy pandas scipy scikit-learn yfinance statsmodels
 
-# Run
-crypto-quantlab
+python crypto_quantlab.py
 ```
 
-**Output:** Complete quantitative research report in under 30 seconds.
+Done in ~30 seconds.
 
-## What to Add
+## Extend It
 
-### More Assets
+### More assets
+
 ```python
-lab.cryptos = ['BTC-USD', 'ETH-USD', 'MATIC-USD', 'AVAX-USD', 'ATOM-USD']
+lab.cryptos = ['BTC-USD', 'ETH-USD', 'MATIC-USD', 'AVAX-USD']
 ```
 
-### Longer History
+### Longer period
+
 ```python
 lab.fetch_data(period='2y')
 ```
 
-### New Strategies
+### New strategies
+
 ```python
 def pairs_trading(self):
-    # Statistical arbitrage on cointegrated pairs
-    
-def volatility_targeting(self):
-    # Risk-adjusted position sizing
+    # Your strategy here
+    pass
 ```
 
-### Advanced Models
-```python
-def garch_volatility(self):
-    # Heteroscedasticity modeling
-    
-def regime_switching(self):
-    # Markov state transitions
-```
+## What's Next
 
-### New Features Coming Soon:
-- [ ] Interactive web playground to sandbox different portfolios
-- [ ] Integration with coinbase account to run metrics
-- [ ] Better Integration Test (Johansen)
+- [ ] Web playground for portfolio construction
+- [ ] Exchange API integration
+- [ ] GARCH volatility models
+- [ ] Regime-switching (Markov)
+
 ---
+
+**Built with:** NumPy, pandas, SciPy, statsmodels, yfinance

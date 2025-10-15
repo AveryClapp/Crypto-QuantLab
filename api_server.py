@@ -87,7 +87,7 @@ async def run_analysis(request: AnalysisRequest):
         lab = CryptoQuantLab()
         lab.cryptos = request.cryptos
 
-
+        # Fetch data
         try:
             data = lab.fetch_data(period=request.timeframe)
             if data is None or data.empty:
@@ -98,15 +98,17 @@ async def run_analysis(request: AnalysisRequest):
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Data issue: {str(e)}")
 
+        # Cointegration analysis
         try:
-            vecm_results = lab.bayesian_vecm_analysis()
+            cointegration_results = lab.cointegration_analysis()
         except Exception as e:
-            vecm_results = {
+            cointegration_results = {
                 "cointegration_probability": 0.0, 
                 "mcmc_simulations": 10000, 
                 "arbitrage_opportunities": []
             }
 
+        # Strategy results
         try:
             strategy_results = lab.systematic_strategies()
         except Exception as e:
@@ -116,6 +118,7 @@ async def run_analysis(request: AnalysisRequest):
                 "combined_sharpe": 0.0
             }
 
+        # Portfolio optimization
         try:
             portfolio_results = lab.portfolio_optimization()
         except Exception as e:
@@ -126,6 +129,7 @@ async def run_analysis(request: AnalysisRequest):
                 "optimal_weights": {}
             }
 
+        # Backtest
         try:
             backtest_results = lab.comprehensive_backtest()
         except Exception as e:
@@ -138,6 +142,7 @@ async def run_analysis(request: AnalysisRequest):
                 "volatility": 0.0
             }
 
+        # Arbitrage
         try:
             arbitrage_results = lab.quantify_cointegration_arbitrage()
         except Exception as e:
@@ -147,7 +152,7 @@ async def run_analysis(request: AnalysisRequest):
                 "total_opportunity_value": 0.0
             }
 
-
+        # Build response
         response_data = {
             "status": "success",
             "data_analysis": {
@@ -159,10 +164,13 @@ async def run_analysis(request: AnalysisRequest):
                     "end": lab.data.index[-1].isoformat() if hasattr(lab, 'data') and lab.data is not None and len(lab.data) > 0 else None
                 }
             },
-            "bayesian_vecm": {
-                "cointegration_probability": vecm_results.get('cointegration_probability', 0.0),
-                "mcmc_simulations": vecm_results.get('mcmc_simulations', 10000),
-                "arbitrage_pairs_found": len(vecm_results.get('arbitrage_opportunities', []))
+            "cointegration": {
+                "is_cointegrated": cointegration_results.get('is_cointegrated', False),
+                "johansen_trace_statistic": cointegration_results.get('johansen_trace_statistic', 0.0),
+                "johansen_critical_value_95": cointegration_results.get('johansen_critical_value_95', 0.0),
+                "cointegration_probability": cointegration_results.get('cointegration_probability', 0.0),
+                "mcmc_simulations": cointegration_results.get('mcmc_simulations', 10000),
+                "arbitrage_pairs_found": len(cointegration_results.get('arbitrage_opportunities', []))
             },
             "strategies": {
                 "momentum_sharpe": strategy_results.get('momentum_sharpe', 0.0),
