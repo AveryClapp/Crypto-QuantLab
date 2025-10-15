@@ -8,7 +8,6 @@ from statsmodels.tsa.vector_ar.vecm import coint_johansen
 from statsmodels.tsa.stattools import coint
 import matplotlib.pyplot as plt
 import warnings
-warnings.filterwarnings('ignore')
 
 class CryptoQuantLab:
     def __init__(self):
